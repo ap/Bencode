@@ -1,0 +1,8 @@
+--- #YAML:1.0
+name: Bencode
+version: 1.0
+author:
+  - Aristotle Pagaltzis <pagaltzis@gmx.de>
+abstract: BitTorrent serialisation format
+license: perl
+generated_by: Module::Build version 0.2612, without YAML.pm
