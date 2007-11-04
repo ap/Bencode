@@ -1,12 +1,11 @@
 Build.PL
 Changes
-MANIFEST
-META.yml # Will be created by "make dist"
-README
 lib/Bencode.pm
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+README
 t/00.load.t
 t/01.bdecode.t
 t/02.bencode.t
-t/pod-coverage.t
-t/pod.t
-Makefile.PL
+t/cpants.t

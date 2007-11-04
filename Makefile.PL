@@ -5,10 +5,10 @@ WriteMakefile
           'PL_FILES' => {},
           'INSTALLDIRS' => 'site',
           'NAME' => 'Bencode',
+          'EXE_FILES' => [],
           'VERSION_FROM' => 'lib/Bencode.pm',
           'PREREQ_PM' => {
-                           'Test::More' => 0,
-                           'Scalar::Util' => 0
+                           'Test::More' => 0
                          }
         )
 ;
