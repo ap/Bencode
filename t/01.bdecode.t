@@ -49,6 +49,7 @@ my @test = (
 	'00:'                      => \[ qr/\Amalformed string length at 0/, 'zero-length string with extra leading zero in count' ],
 	'l-3:e'                    => \[ qr/\Amalformed string length at 1/, 'list with negative-length string' ],
 	'i-03e'                    => \[ qr/\Amalformed integer data at 1/, 'negative integer with leading zero' ],
+	"2:\x0A\x0D"               => "\x0A\x0D",
 );
 
 plan tests => 1 + @test / 2;

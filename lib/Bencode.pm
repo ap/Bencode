@@ -3,7 +3,7 @@ use strict;
 use Carp;
 use Exporter;
 
-our $VERSION = '1.1';
+our $VERSION = '1.2';
 
 our @ISA = qw( Exporter );
 our @EXPORT_OK = qw( bencode bdecode );

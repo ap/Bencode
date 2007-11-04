@@ -1,18 +1,20 @@
 ---
 name: Bencode
-version: 1.1
+version: 1.2
 author:
   - 'Aristotle Pagaltzis <pagaltzis@gmx.de>'
 abstract: BitTorrent serialisation format
 license: perl
 resources:
   license: http://dev.perl.org/licenses/
+requires:
+  perl: 5.6.1
 build_requires:
   Test::More: 0
 provides:
   Bencode:
     file: lib/Bencode.pm
-    version: 1.1
+    version: 1.2
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
