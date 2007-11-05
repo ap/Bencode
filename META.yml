@@ -1,6 +1,6 @@
 ---
 name: Bencode
-version: 1.3
+version: 1.31
 author:
   - 'Aristotle Pagaltzis <pagaltzis@gmx.de>'
 abstract: BitTorrent serialisation format
@@ -12,7 +12,7 @@ build_requires:
 provides:
   Bencode:
     file: lib/Bencode.pm
-    version: 1.3
+    version: 1.31
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

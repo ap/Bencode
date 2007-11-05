@@ -1,17 +1,14 @@
 package Bencode;
-
+use strict;
 use Carp;
 use Exporter;
 
-$VERSION = '1.3';
+use vars qw( $VERSION @ISA @EXPORT_OK $DEBUG $do_lenient_decode );
+
+$VERSION = '1.31';
 
 @ISA = qw( Exporter );
 @EXPORT_OK = qw( bencode bdecode );
-
-$DEBUG = 0;
-$do_lenient_decode = 0;
-
-use strict;
 
 sub _msg { sprintf "@_", pos() || 0 }
 
