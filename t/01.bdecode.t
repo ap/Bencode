@@ -50,16 +50,40 @@ my @test = (
 	'l-3:e'                    => \[ qr/\Amalformed string length at 1/, 'list with negative-length string' ],
 	'i-03e'                    => \[ qr/\Amalformed integer data at 1/, 'negative integer with leading zero' ],
 	"2:\x0A\x0D"               => "\x0A\x0D",
+	['d1:a0:e', 0, 1]          => { a => '' }, # Accept single dict when max_depth is 1
+	['d1:a0:e', 0, 0]          => \[ qr/\Anested too deep at 1/, 'single dict when max_depth is 0' ],
+	['d1:ad1:a0:ee', 0, 2]     => { a => { a => '' } }, # Accept a nested dict when max_depth is 2
+	['d1:ad1:a0:ee', 0, 1]     => \[ qr/\Anested too deep at 5/, 'nested dict when max_depth is 1' ],
+	['l0:e', 0, 1]             => [ '' ], # Accept single list when max_depth is 1
+	['l0:e', 0, 0]             => \[ qr/\Anested too deep at 1/, 'single list when max_depth is 0' ],
+	['ll0:ee', 0, 2]           => [ [ '' ] ], # Accept a nested list when max_depth is 2
+	['ll0:ee', 0, 1]           => \[ qr/\Anested too deep at 2/, 'nested list when max_depth is 1' ],
+	['d1:al0:ee', 0, 2]        => { a => [ '' ] }, # Accept dict containing list when max_depth is 2
+	['d1:al0:ee', 0, 1]        => \[ qr/\Anested too deep at 5/, 'list in dict when max_depth is 1' ],
+	['ld1:a0:ee', 0, 2]        => [ { 'a'  => '' } ], # Accept list containing dict when max_depth is 2
+	['ld1:a0:ee', 0, 1]        => \[ qr/\Anested too deep at 2/, 'dict in list when max_depth is 1' ],
+	['d1:a0:1:bl0:ee', 0, 2]   => { a => '', b => [ '' ] }, # Accept dict containing list when max_depth is 2
+	['d1:a0:1:bl0:ee', 0, 1]   => \[ qr/\Anested too deep at 10/, 'list in dict when max_depth is 1' ],
 );
 
 plan tests => 1 + @test / 2;
 
 while ( my ( $frozen, $thawed ) = splice @test, 0, 2 ) {
 	my $result;
-	my $lived = eval { $result = bdecode( $frozen ); 1 };
+	my $testname;
+	my $lived = eval {
+		if ( ref $frozen eq 'ARRAY' ) {
+			$testname = "decode [".join(', ', @$frozen)."]";
+			$result = bdecode( @$frozen );
+		} else {
+			$testname = "decode '$frozen'";
+			$result = bdecode( $frozen );
+		}
+		1
+	};
 
 	if( ref $thawed ne 'REF' ) {
-		is_deeply( $result, $thawed, "decode '$frozen'" )
+		is_deeply( $result, $thawed, $testname );
 	}
 	else {
 		my ( $error_rx, $kind_of_brokenness ) = @$$thawed;

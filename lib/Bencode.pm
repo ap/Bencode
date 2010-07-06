@@ -3,7 +3,7 @@ use strict;
 use Carp;
 use Exporter;
 
-use vars qw( $VERSION @ISA @EXPORT_OK $DEBUG $do_lenient_decode );
+use vars qw( $VERSION @ISA @EXPORT_OK $DEBUG $do_lenient_decode $max_depth );
 
 $VERSION = '1.31';
 
@@ -38,6 +38,8 @@ sub _bdecode_string {
 }
 
 sub _bdecode_chunk {
+	my $depth = shift;
+	$depth++;
 	warn _msg 'decoding at %s' if $DEBUG;
 
 	if ( defined( my $str = _bdecode_string() ) ) {
@@ -54,15 +56,23 @@ sub _bdecode_chunk {
 	}
 	elsif ( m/ \G l /xgc ) {
 		warn _msg 'LIST' if $DEBUG;
+
+		croak _msg 'nested too deep at %s'
+			if defined $max_depth and $depth > $max_depth;
+
 		my @list;
 		until ( m/ \G e /xgc ) {
 			warn _msg 'list not terminated at %s, looking for another element' if $DEBUG;
-			push @list, _bdecode_chunk();
+			push @list, _bdecode_chunk($depth);
 		}
 		return \@list;
 	}
 	elsif ( m/ \G d /xgc ) {
 		warn _msg 'DICT' if $DEBUG;
+
+		croak _msg 'nested too deep at %s'
+			if defined $max_depth and $depth > $max_depth;
+
 		my $last_key;
 		my %hash;
 		until ( m/ \G e /xgc ) {
@@ -84,7 +94,7 @@ sub _bdecode_chunk {
 				if m/ \G e /xgc;
 
 			$last_key = $key;
-			$hash{ $key } = _bdecode_chunk();
+			$hash{ $key } = _bdecode_chunk($depth);
 		}
 		return \%hash;
 	}
@@ -96,7 +106,8 @@ sub _bdecode_chunk {
 sub bdecode {
 	local $_ = shift;
 	local $do_lenient_decode = shift;
-	my $deserialised_data = _bdecode_chunk();
+	local $max_depth = shift;
+	my $deserialised_data = _bdecode_chunk(0);
 	croak _msg 'trailing garbage at %s' if $_ !~ m/ \G \z /xgc;
 	return $deserialised_data;
 }
@@ -162,11 +173,13 @@ Takes a single argument which may be a scalar or a reference to a scalar, array 
 
 Croaks on unhandled data types.
 
-=head2 C<bdecode( $string [, $do_lenient_decode ] )>
+=head2 C<bdecode( $string [, $do_lenient_decode [, $max_depth ] ] )>
 
 Takes a string and returns the corresponding deserialised data structure.
 
 If you pass a true value for the second option, it will disregard the sort order of dict keys. This violation of the I<becode> format is somewhat common.
+
+If you pass an integer for the third option, it will refuse to parse dictionaries nested deeper than this level, by croaking with an appropriate message. Avoids "Deep recursion" warnings and potential out of memory situations resulting from maliciously crafted input data.
 
 Croaks on malformed data.
 
@@ -215,6 +228,10 @@ Your data violates the I<bencode> format constaint that all dict keys be strings
 =item C<dict key is missing value at %s>
 
 Your data contains a dictionary with an odd number of elements.
+
+=item C<nested too deep at %s>
+
+Your data contains dicts or lists that are nested deeper than the $max_depth passed to C<bdecode()>.
 
 =item C<unhandled data type>
 
