@@ -17,7 +17,8 @@ sub _bdecode_string {
 	if ( m/ \G ( 0 | [1-9] \d* ) : /xgc ) {
 		my $len = $1;
 
-		croak _msg 'unexpected end of string data starting at %s' if $len > length() - pos();
+		croak _msg 'unexpected end of string data starting at %s'
+			if $len > length() - pos();
 
 		my $str = substr $_, pos(), $len;
 		pos() = pos() + $len;
@@ -38,9 +39,9 @@ sub _bdecode_string {
 }
 
 sub _bdecode_chunk {
-	my $depth = shift;
-	$depth++;
 	warn _msg 'decoding at %s' if $DEBUG;
+
+	local $max_depth = $max_depth - 1 if defined $max_depth;
 
 	if ( defined( my $str = _bdecode_string() ) ) {
 		return $str;
@@ -57,21 +58,21 @@ sub _bdecode_chunk {
 	elsif ( m/ \G l /xgc ) {
 		warn _msg 'LIST' if $DEBUG;
 
-		croak _msg 'nested too deep at %s'
-			if defined $max_depth and $depth > $max_depth;
+		croak _msg 'nesting depth exceeded at %s'
+			if defined $max_depth and $max_depth < 0;
 
 		my @list;
 		until ( m/ \G e /xgc ) {
 			warn _msg 'list not terminated at %s, looking for another element' if $DEBUG;
-			push @list, _bdecode_chunk($depth);
+			push @list, _bdecode_chunk();
 		}
 		return \@list;
 	}
 	elsif ( m/ \G d /xgc ) {
 		warn _msg 'DICT' if $DEBUG;
 
-		croak _msg 'nested too deep at %s'
-			if defined $max_depth and $depth > $max_depth;
+		croak _msg 'nesting depth exceeded at %s'
+			if defined $max_depth and $max_depth < 0;
 
 		my $last_key;
 		my %hash;
@@ -94,7 +95,7 @@ sub _bdecode_chunk {
 				if m/ \G e /xgc;
 
 			$last_key = $key;
-			$hash{ $key } = _bdecode_chunk($depth);
+			$hash{ $key } = _bdecode_chunk();
 		}
 		return \%hash;
 	}
@@ -107,7 +108,7 @@ sub bdecode {
 	local $_ = shift;
 	local $do_lenient_decode = shift;
 	local $max_depth = shift;
-	my $deserialised_data = _bdecode_chunk(0);
+	my $deserialised_data = _bdecode_chunk();
 	croak _msg 'trailing garbage at %s' if $_ !~ m/ \G \z /xgc;
 	return $deserialised_data;
 }
@@ -179,7 +180,7 @@ Takes a string and returns the corresponding deserialised data structure.
 
 If you pass a true value for the second option, it will disregard the sort order of dict keys. This violation of the I<becode> format is somewhat common.
 
-If you pass an integer for the third option, it will refuse to parse dictionaries nested deeper than this level, by croaking with an appropriate message. Avoids "Deep recursion" warnings and potential out of memory situations resulting from maliciously crafted input data.
+If you pass an integer for the third option, it will croak when attempting to parse dictionaries nested deeper than this level, to prevent DoS attacks using maliciously crafted input.
 
 Croaks on malformed data.
 
@@ -229,7 +230,7 @@ Your data violates the I<bencode> format constaint that all dict keys be strings
 
 Your data contains a dictionary with an odd number of elements.
 
-=item C<nested too deep at %s>
+=item C<nesting depth exceeded at %s>
 
 Your data contains dicts or lists that are nested deeper than the $max_depth passed to C<bdecode()>.
 
