@@ -3,9 +3,9 @@ use strict;
 use Carp;
 use Exporter;
 
-use vars qw( $VERSION @ISA @EXPORT_OK $DEBUG $do_lenient_decode $max_depth );
+# ABSTRACT: BitTorrent serialisation format
 
-$VERSION = '1.31';
+use vars qw( $VERSION @ISA @EXPORT_OK $DEBUG $do_lenient_decode $max_depth );
 
 @ISA = qw( Exporter );
 @EXPORT_OK = qw( bencode bdecode );
@@ -143,15 +143,6 @@ bdecode( 'i1e' );
 
 __END__
 
-=head1 NAME
-
-Bencode - BitTorrent serialisation format
-
-=head1 VERSION
-
-This document describes Bencode version 1.0
-
-
 =head1 SYNOPSIS
 
  use Bencode qw( bencode bdecode );
@@ -259,23 +250,4 @@ The format does not support this.
 
 Strings and numbers are practically indistinguishable in Perl, so C<bencode()> has to resort to a heuristic to decide how to serialise a scalar. This cannot be fixed.
 
-Please report any bugs or feature requests to C<bug-bencode@rt.cpan.org>, or through the web interface at L<http://rt.cpan.org>.
-
-
-=head1 AUTHOR
-
-Aristotle Pagaltzis  L<mailto:pagaltzis@gmx.de>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) 2006, Aristotle Pagaltzis. All rights reserved.
-
-This module is free software; you can redistribute it and/or modify it under the same terms as Perl itself. See L<perlartistic>.
-
-
-=head1 DISCLAIMER OF WARRANTY
-
-BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+Please report any bugs or feature requests through the web interface at L<http://github.com/ap/Bencode/issues>.

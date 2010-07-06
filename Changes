@@ -1,6 +1,17 @@
 =head1 Revision history for Bencode
 
 
+=head2 1.4 (2010-07-06 19:46:03+0200)
+
+=over 4
+
+=item * New C<$max_depth> parameter to limit structure depth in parsing; fixes RT #59131
+
+Many thanks to Day Barr for the report and the patch!
+
+=back
+
+
 =head2 1.31 (2007-11-05 02:53:06+01:00)
 
 =over 4
