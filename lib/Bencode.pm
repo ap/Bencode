@@ -178,7 +178,7 @@ Croaks on unhandled data types.
 
 Takes a string and returns the corresponding deserialised data structure.
 
-If you pass a true value for the second option, it will disregard the sort order of dict keys. This violation of the I<becode> format is somewhat common.
+If you pass a true value for the second option, it will disregard the sort order of dict keys. This violation of the I<bencode> format is somewhat common.
 
 If you pass an integer for the third option, it will croak when attempting to parse dictionaries nested deeper than this level, to prevent DoS attacks using maliciously crafted input.
 
@@ -258,10 +258,6 @@ The format does not support this.
 =head1 BUGS AND LIMITATIONS
 
 Strings and numbers are practically indistinguishable in Perl, so C<bencode()> has to resort to a heuristic to decide how to serialise a scalar. This cannot be fixed.
-
-Error reporting is currently suboptimal. Malformed strings or integers will throw a misleading C<trailing garbage> message instead of a more specific diagnostic.
-
-No bugs have been reported.
 
 Please report any bugs or feature requests to C<bug-bencode@rt.cpan.org>, or through the web interface at L<http://rt.cpan.org>.
 
