@@ -154,10 +154,10 @@ __END__
 
 =head1 DESCRIPTION
 
-This module implements the BitTorrent I<bencode> serialisation format as described in L<http://www.bittorrent.org/protocol.html>.
+This module implements the BitTorrent I<bencode> serialisation format as described in L<http://www.bittorrent.org/beps/bep_0003.html#bencoding>.
 
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 C<bencode( $datastructure )>
 
