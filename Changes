@@ -1,5 +1,9 @@
 Revision history for Bencode
 
+1.401 Sun  4 Jan 2015
+	- Switched to Exporter::Tidy
+	- Bumped minimum Perl back to 5.6
+
 1.4 Tue  6 Jul 2010
 	- New $max_depth parameter to limit structure depth in parsing; fixes RT #59131
 	  Many thanks to Day Barr for the report and the patch!
