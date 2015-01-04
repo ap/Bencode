@@ -1,6 +1,8 @@
-use Test::More;
+use strict;
+use warnings;
 
-use Bencode qw( bdecode );
+use Test::More;
+use Bencode 'bdecode';
 
 my @test = (
 	'0:0:'                     => \[ qr/\Atrailing garbage at 2\b/, 'data past end of first correct bencoded string' ],

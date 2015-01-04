@@ -1,6 +1,8 @@
-use Test::More;
+use strict;
+use warnings;
 
-use Bencode qw( bencode );
+use Test::More;
+use Bencode 'bencode';
 
 my @test = (
 	'i4e'                      => 4,
