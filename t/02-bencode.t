@@ -1,29 +1,27 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More 0.88; # for done_testing
 use Bencode 'bencode';
 
-my @test = (
-	'i4e'                      => 4,
-	'i0e'                      => 0,
-	'i-10e'                    => -10,
-	'i12345678901234567890e'   => '12345678901234567890',
-	'0:'                       => '',
-	'3:abc'                    => 'abc',
-	'10:1234567890'            => \'1234567890',
-	'le'                       => [],
-	'li1ei2ei3ee'              => [ 1, 2, 3 ],
-	'll5:Alice3:Bobeli2ei3eee' => [ [ 'Alice', 'Bob' ], [ 2, 3 ] ],
-	'de'                       => {},
-	'd3:agei25e4:eyes4:bluee'  => { 'age' => 25, 'eyes' => 'blue' },
-	'd8:spam.mp3d6:author5:Alice6:lengthi100000eee' => { 'spam.mp3' => { 'author' => 'Alice', 'length' => 100000 } },
-);
-
-plan tests => 0 + @test / 2;
-
-while ( my ( $frozen, $thawed ) = splice @test, 0, 2 ) {
-	is_deeply( bencode( $thawed ), $frozen, "encode $frozen" );
+sub enc_ok {
+	my ( $frozen, $thawed ) = @_;
+	local $Test::Builder::Level = $Test::Builder::Level + 1;
+	is_deeply bencode( $thawed ), $frozen, "encode $frozen";
 }
 
-# vim: set ft=perl:
+enc_ok 'i4e'                      => 4;
+enc_ok 'i0e'                      => 0;
+enc_ok 'i-10e'                    => -10;
+enc_ok 'i12345678901234567890e'   => '12345678901234567890';
+enc_ok '0:'                       => '';
+enc_ok '3:abc'                    => 'abc';
+enc_ok '10:1234567890'            => \'1234567890';
+enc_ok 'le'                       => [];
+enc_ok 'li1ei2ei3ee'              => [ 1, 2, 3 ];
+enc_ok 'll5:Alice3:Bobeli2ei3eee' => [ [ 'Alice', 'Bob' ], [ 2, 3 ] ];
+enc_ok 'de'                       => {};
+enc_ok 'd3:agei25e4:eyes4:bluee'  => { 'age' => 25, 'eyes' => 'blue' };
+enc_ok 'd8:spam.mp3d6:author5:Alice6:lengthi100000eee' => { 'spam.mp3' => { 'author' => 'Alice', 'length' => 100000 } };
+
+done_testing;
