@@ -3,15 +3,13 @@ use strict;
 use warnings;
 
 package Bencode;
-use Carp;
-use Exporter;
 
 # ABSTRACT: BitTorrent serialisation format
 
-our ( $DEBUG, $do_lenient_decode, $max_depth );
+use Carp;
+use Exporter::Tidy all => [qw( bencode bdecode )];
 
-our @ISA = qw( Exporter );
-our @EXPORT_OK = qw( bencode bdecode );
+our ( $DEBUG, $do_lenient_decode, $max_depth );
 
 sub _msg { sprintf "@_", pos() || 0 }
 
