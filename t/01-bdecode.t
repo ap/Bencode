@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use Test::More 0.88; # for done_testing
+use Test::Differences;
 use Bencode 'bdecode';
 
 sub un {
@@ -16,7 +17,7 @@ sub decod_ok {
 	my ( $frozen, $thawed ) = @_;
 	my ( $testname, $result ) = un $frozen;
 	local $Test::Builder::Level = $Test::Builder::Level + 1;
-	is_deeply $result, $thawed, $testname;
+	eq_or_diff $result, $thawed, $testname;
 }
 
 sub error_ok {
@@ -59,7 +60,7 @@ error_ok 'd'             => qr/\Aunexpected end of data at 1\b/, 'unclosed empty
 error_ok 'defoobar'      => qr/\Atrailing garbage at 2\b/, 'empty dict with trailing garbage';
 decod_ok 'de'            => {};
 decod_ok 'd3:agei25e4:eyes4:bluee' => { 'age' => 25, 'eyes' => 'blue' };
-decod_ok 'd8:spam.mp3d6:author5:Alice6:lengthi100000eee' => { 'spam.mp3' => { 'author' => 'Alice', 'length' => 100000 } };
+decod_ok 'd8:spam.mp3d6:author5:Alice6:lengthi100000eee' => { 'spam.mp3' => { 'author' => 'Alice', 'length' => '100000' } };
 error_ok 'd3:fooe'       => qr/\Adict key is missing value at 7\b/, 'dict with odd number of elements';
 error_ok 'di1e0:e'       => qr/\Adict key is not a string at 1/, 'dict with integer key';
 error_ok 'd1:b0:1:a0:e'  => qr/\Adict key not in sort order at 9/, 'missorted keys';
@@ -90,7 +91,7 @@ error_ok ['ld1:a0:ee', 0, 1]      => qr/\Anesting depth exceeded at 2/, 'dict in
 decod_ok ['d1:a0:1:bl0:ee', 0, 2] => { a => '', b => [ '' ] }, # Accept dict containing list when max_depth is 2
 error_ok ['d1:a0:1:bl0:ee', 0, 1] => qr/\Anesting depth exceeded at 10/, 'list in dict when max_depth is 1';
 
-is_deeply(
+eq_or_diff(
 	bdecode( 'd1:b0:1:a0:e', 1 ),
 	{ a => '', b => '', },
 	'accept missorted keys when decoding leniently',
