@@ -155,14 +155,18 @@ __END__
 
 =head1 DESCRIPTION
 
-This module implements the BitTorrent I<bencode> serialisation format as described in L<http://www.bittorrent.org/beps/bep_0003.html#bencoding>.
-
+This module implements the BitTorrent I<bencode> serialisation format,
+as described in L<http://www.bittorrent.org/beps/bep_0003.html#bencoding>.
 
 =head1 INTERFACE
 
 =head2 C<bencode( $datastructure )>
 
-Takes a single argument which may be a scalar or a reference to a scalar, array or hash. Arrays and hashes may in turn contain values of these same types. Simple scalars that look like canonically represented integers will be serialised as such. To bypass the heuristic and force serialisation as a string, use a reference to a scalar.
+Takes a single argument which may be a scalar, or may be a reference to either
+a scalar, an array or a hash. Arrays and hashes may in turn contain values of
+these same types. Plain scalars that look like canonically represented integers
+will be serialised as such. To bypass the heuristic and force serialisation as
+a string, use a reference to a scalar.
 
 Croaks on unhandled data types.
 
@@ -170,9 +174,12 @@ Croaks on unhandled data types.
 
 Takes a string and returns the corresponding deserialised data structure.
 
-If you pass a true value for the second option, it will disregard the sort order of dict keys. This violation of the I<bencode> format is somewhat common.
+If you pass a true value for the second option, it will disregard the sort
+order of dict keys. This violation of the I<bencode> format is somewhat common.
 
-If you pass an integer for the third option, it will croak when attempting to parse dictionaries nested deeper than this level, to prevent DoS attacks using maliciously crafted input.
+If you pass an integer for the third option, it will croak when attempting to
+parse dictionaries nested deeper than this level, to prevent DoS attacks using
+maliciously crafted input.
 
 Croaks on malformed data.
 
@@ -200,23 +207,28 @@ Your data includes a string declared to be longer than the available data.
 
 =item C<malformed string length at %s>
 
-Your data contained a string with negative length or a length with leading zeroes.
+Your data contained a string with negative length or a length with leading
+zeroes.
 
 =item C<malformed integer data at %s>
 
-Your data contained something that was supposed to be an integer but didn't make sense.
+Your data contained something that was supposed to be an integer but didn't
+make sense.
 
 =item C<dict key not in sort order at %s>
 
-Your data violates the I<bencode> format constaint that dict keys must appear in lexical sort order.
+Your data violates the I<bencode> format constaint that dict keys must appear
+in lexical sort order.
 
 =item C<duplicate dict key at %s>
 
-Your data violates the I<bencode> format constaint that all dict keys must be unique.
+Your data violates the I<bencode> format constaint that all dict keys must be
+unique.
 
 =item C<dict key is not a string at %s>
 
-Your data violates the I<bencode> format constaint that all dict keys be strings.
+Your data violates the I<bencode> format constaint that all dict keys be
+strings.
 
 =item C<dict key is missing value at %s>
 
@@ -224,21 +236,31 @@ Your data contains a dictionary with an odd number of elements.
 
 =item C<nesting depth exceeded at %s>
 
-Your data contains dicts or lists that are nested deeper than the $max_depth passed to C<bdecode()>.
+Your data contains dicts or lists that are nested deeper than the $max_depth
+passed to C<bdecode()>.
 
 =item C<unhandled data type>
 
-You are trying to serialise a data structure that consists of data types other than
+You are trying to serialise a data structure that consists of data types other
+than
 
 =over
 
-=item * scalars
+=item *
 
-=item * references to arrays
+scalars
 
-=item * references to hashes
+=item *
 
-=item * references to scalars
+references to arrays
+
+=item *
+
+references to hashes
+
+=item *
+
+references to scalars
 
 =back
 
@@ -246,9 +268,8 @@ The format does not support this.
 
 =back
 
-
 =head1 BUGS AND LIMITATIONS
 
-Strings and numbers are practically indistinguishable in Perl, so C<bencode()> has to resort to a heuristic to decide how to serialise a scalar. This cannot be fixed.
-
-Please report any bugs or feature requests through the web interface at L<http://github.com/ap/Bencode/issues>.
+Strings and numbers are practically indistinguishable in Perl, so C<bencode()>
+has to resort to a heuristic to decide how to serialise a scalar. This cannot
+be fixed.
