@@ -1,8 +1,12 @@
 Revision history for Bencode
 
+1.402 Sat 10 Jan 2015
+	- No functional changes
+	- No longer contains INSTALL file with install-as-root instructions
+
 1.401 Sun  4 Jan 2015
-	- Switched to Exporter::Tidy
-	- Bumped minimum Perl back to 5.6
+	- Now uses Exporter::Tidy
+	- Minimum Perl back to 5.6
 
 1.4 Tue  6 Jul 2010
 	- New $max_depth parameter to limit structure depth in parsing; fixes RT #59131
@@ -15,7 +19,7 @@ Revision history for Bencode
 	- Got rid of `our`; should work as far back as Perl 5.4 now
 
 1.2 Sun  4 Nov 2007
-	- Added test for newline-resilient string parsing (RT #30466)
+	- Test for newline-resilient string parsing (RT #30466)
 
 1.1 Sun  4 Nov 2007
 	- Changed parsing of strings to not break on newlines (RT #30466)

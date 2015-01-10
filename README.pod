@@ -1,0 +1,153 @@
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Bencode - BitTorrent serialisation format
+
+=head1 VERSION
+
+version 1.402
+
+=head1 SYNOPSIS
+
+ use Bencode qw( bencode bdecode );
+ 
+ my $bencoded = bencode { 'age' => 25, 'eyes' => 'blue' };
+ print $bencoded, "\n";
+ my $decoded = bdecode $bencoded;
+
+=head1 DESCRIPTION
+
+This module implements the BitTorrent I<bencode> serialisation format,
+as described in L<http://www.bittorrent.org/beps/bep_0003.html#bencoding>.
+
+=head1 INTERFACE
+
+=head2 C<bencode( $datastructure )>
+
+Takes a single argument which may be a scalar, or may be a reference to either
+a scalar, an array or a hash. Arrays and hashes may in turn contain values of
+these same types. Plain scalars that look like canonically represented integers
+will be serialised as such. To bypass the heuristic and force serialisation as
+a string, use a reference to a scalar.
+
+Croaks on unhandled data types.
+
+=head2 C<bdecode( $string [, $do_lenient_decode [, $max_depth ] ] )>
+
+Takes a string and returns the corresponding deserialised data structure.
+
+If you pass a true value for the second option, it will disregard the sort
+order of dict keys. This violation of the I<bencode> format is somewhat common.
+
+If you pass an integer for the third option, it will croak when attempting to
+parse dictionaries nested deeper than this level, to prevent DoS attacks using
+maliciously crafted input.
+
+Croaks on malformed data.
+
+=head1 DIAGNOSTICS
+
+=over
+
+=item C<trailing garbage at %s>
+
+Your data does not end after the first I<bencode>-serialised item.
+
+You may also get this error if a malformed item follows.
+
+=item C<garbage at %s>
+
+Your data is malformed.
+
+=item C<unexpected end of data at %s>
+
+Your data is truncated.
+
+=item C<unexpected end of string data starting at %s>
+
+Your data includes a string declared to be longer than the available data.
+
+=item C<malformed string length at %s>
+
+Your data contained a string with negative length or a length with leading
+zeroes.
+
+=item C<malformed integer data at %s>
+
+Your data contained something that was supposed to be an integer but didn't
+make sense.
+
+=item C<dict key not in sort order at %s>
+
+Your data violates the I<bencode> format constaint that dict keys must appear
+in lexical sort order.
+
+=item C<duplicate dict key at %s>
+
+Your data violates the I<bencode> format constaint that all dict keys must be
+unique.
+
+=item C<dict key is not a string at %s>
+
+Your data violates the I<bencode> format constaint that all dict keys be
+strings.
+
+=item C<dict key is missing value at %s>
+
+Your data contains a dictionary with an odd number of elements.
+
+=item C<nesting depth exceeded at %s>
+
+Your data contains dicts or lists that are nested deeper than the $max_depth
+passed to C<bdecode()>.
+
+=item C<unhandled data type>
+
+You are trying to serialise a data structure that consists of data types other
+than
+
+=over
+
+=item *
+
+scalars
+
+=item *
+
+references to arrays
+
+=item *
+
+references to hashes
+
+=item *
+
+references to scalars
+
+=back
+
+The format does not support this.
+
+=back
+
+=head1 BUGS AND LIMITATIONS
+
+Strings and numbers are practically indistinguishable in Perl, so C<bencode()>
+has to resort to a heuristic to decide how to serialise a scalar. This cannot
+be fixed.
+
+=head1 AUTHOR
+
+Aristotle Pagaltzis <pagaltzis@gmx.de>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2015 by Aristotle Pagaltzis.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
