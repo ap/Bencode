@@ -144,6 +144,8 @@ bdecode( 'i1e' );
 
 __END__
 
+=pod
+
 =head1 SYNOPSIS
 
  use Bencode qw( bencode bdecode );
