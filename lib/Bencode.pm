@@ -9,7 +9,7 @@ package Bencode;
 use Carp;
 use Exporter::Tidy all => [qw( bencode bdecode )];
 
-our ( $DEBUG, $do_lenient_decode, $max_depth );
+our ( $DEBUG, $do_lenient_decode, $max_depth, $undef_encoding );
 
 sub _msg { sprintf "@_", pos() || 0 }
 
@@ -117,7 +117,8 @@ sub bdecode {
 sub _bencode;
 sub _bencode {
 	map
-	+( ( not ref         ) ? ( m/\A (?: 0 | -? [1-9] \d* ) \z/x ? 'i' . $_ . 'e' : length . ':' . $_ )
+	+( ( not defined     ) ? ( $undef_encoding or croak 'unhandled data type' )
+	:  ( not ref         ) ? ( m/\A (?: 0 | -? [1-9] \d* ) \z/x ? 'i' . $_ . 'e' : length . ':' . $_ )
 	:  ( 'SCALAR' eq ref ) ? ( length $$_ ) . ':' . $$_ # escape hatch -- use this to avoid num/str heuristics
 	:  (  'ARRAY' eq ref ) ? 'l' . ( join '', _bencode @$_ ) . 'e'
 	:  (   'HASH' eq ref ) ? 'd' . do { my @k = sort keys %$_; join '', map +( length $k[0] ) . ':' . ( shift @k ) . $_, _bencode @$_{ @k } } . 'e'
@@ -126,8 +127,15 @@ sub _bencode {
 }
 
 sub bencode {
-	croak 'need exactly one argument' if @_ != 1;
-	goto &_bencode;
+	my $undef_mode = @_ == 2 ? pop : 'str';
+	$undef_mode = 'str' unless defined $undef_mode;
+	local $undef_encoding
+		= 'str' eq $undef_mode ? '0:'
+		: 'num' eq $undef_mode ? 'i0e'
+		: 'die' eq $undef_mode ? undef
+		: croak qq'undef_mode argument must be "str", "num", "die" or undefined, not "$undef_mode"';
+	croak 'need exactly one or two arguments' if @_ != 1;
+	( &_bencode )[0];
 }
 
 bdecode( 'i1e' );
@@ -152,13 +160,33 @@ as described in L<http://www.bittorrent.org/beps/bep_0003.html#bencoding>.
 
 =head1 INTERFACE
 
-=head2 C<bencode( $datastructure )>
+=head2 C<bencode( $datastructure [, $undef_mode ] )>
 
-Takes a single argument which may be a scalar, or may be a reference to either
+Takes data to be encoded as a single argument which may be a scalar,
+or may be a reference to either
 a scalar, an array or a hash. Arrays and hashes may in turn contain values of
 these same types. Plain scalars that look like canonically represented integers
 will be serialised as such. To bypass the heuristic and force serialisation as
 a string, use a reference to a scalar.
+
+The second argument is optional (in which case it defaults to C<str>) and
+specifies how to treat C<undef> values. You can pick one of three options:
+
+=over 6
+
+=item C<str>
+
+to encode C<undef>s as empty strings;
+
+=item C<num>
+
+to encode C<undef>s as zeroes;
+
+=item C<die>
+
+to croak upon encountering an C<undef> value.
+
+=back
 
 Croaks on unhandled data types.
 
