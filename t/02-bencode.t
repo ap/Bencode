@@ -2,13 +2,12 @@ use strict;
 use warnings;
 
 use Test::More 0.88; # for done_testing
-use Test::Differences;
 use Bencode 'bencode';
 
 sub enc_ok {
 	my ( $frozen, $thawed ) = @_;
 	local $Test::Builder::Level = $Test::Builder::Level + 1;
-	eq_or_diff bencode( $thawed ), $frozen, "encode $frozen";
+	is bencode( $thawed ), $frozen, "encode $frozen";
 }
 
 enc_ok 'i4e'                      => 4;
