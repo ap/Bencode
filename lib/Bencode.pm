@@ -114,25 +114,15 @@ sub bdecode {
 	return $deserialised_data;
 }
 
+sub _bencode;
 sub _bencode {
-	my ( $data ) = @_;
-	if ( not ref $data ) {
-		return sprintf 'i%se', $data if $data =~ m/\A (?: 0 | -? [1-9] \d* ) \z/x;
-		return length( $data ) . ':' . $data;
-	}
-	elsif ( ref $data eq 'SCALAR' ) {
-		# escape hatch -- use this to avoid num/str heuristics
-		return length( $$data ) . ':' . $$data;
-	}
-	elsif ( ref $data eq 'ARRAY' ) {
-		return 'l' . join( '', map _bencode( $_ ), @$data ) . 'e';
-	}
-	elsif ( ref $data eq 'HASH' ) {
-		return 'd' . join( '', map { _bencode( \$_ ), _bencode( $data->{ $_ } ) } sort keys %$data ) . 'e';
-	}
-	else {
-		croak 'unhandled data type';
-	}
+	map
+	+( ( not ref         ) ? ( m/\A (?: 0 | -? [1-9] \d* ) \z/x ? 'i' . $_ . 'e' : length . ':' . $_ )
+	:  ( 'SCALAR' eq ref ) ? ( length $$_ ) . ':' . $$_ # escape hatch -- use this to avoid num/str heuristics
+	:  (  'ARRAY' eq ref ) ? 'l' . ( join '', _bencode @$_ ) . 'e'
+	:  (   'HASH' eq ref ) ? 'd' . do { my @k = sort keys %$_; join '', map +( length $k[0] ) . ':' . ( shift @k ) . $_, _bencode @$_{ @k } } . 'e'
+	:  croak 'unhandled data type'
+	), @_
 }
 
 sub bencode {
