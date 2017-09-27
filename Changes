@@ -1,5 +1,6 @@
 Revision history for Bencode
 
+1.500 Wed 27 Sep 2017
 	- New $undef_mode parameter to properly handle undefs during encoding
 
 1.402 Sat 10 Jan 2015
