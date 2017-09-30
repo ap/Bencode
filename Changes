@@ -1,5 +1,6 @@
 Revision history for Bencode
 
+1.501 Sat 30 Sep 2017
 	- No test failures under Carp < 1.25
 	- No test dependency on Test::More >= 0.88
 
