@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More 0.88; # for done_testing
+use Test::More tests => 25;
 use Bencode 'bencode';
 
 sub enc_ok {
@@ -40,5 +40,3 @@ for my $mode ( qw( foo bar baz ) ) {
 	is $frozen, undef, qq'bad undef mode "$mode"';
 	is $e, sprintf( qq'undef_mode argument must be "str", "num", "die" or undefined, not "%s" at %s line %d.\n', $mode, __FILE__, __LINE__ - 2 ), '... fails for the right reason';
 }
-
-done_testing;

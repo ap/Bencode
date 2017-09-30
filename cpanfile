@@ -5,7 +5,7 @@ requires 'Exporter::Tidy';
 
 on test => sub {
 	requires 'Test::Differences';
-	requires 'Test::More', '0.88';
+	requires 'Test::More';
 };
 
 # vim: ft=perl
