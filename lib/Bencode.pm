@@ -6,10 +6,16 @@ package Bencode;
 
 # ABSTRACT: BitTorrent serialisation format
 
-use Carp;
 use Exporter::Tidy all => [qw( bencode bdecode )];
 
 our ( $DEBUG, $do_lenient_decode, $max_depth, $undef_encoding );
+
+sub croak {
+	my ( @c, $i );
+	1 while ( @c = caller $i++ ) and $c[0] eq __PACKAGE__;
+	@c or @c = caller;
+	die @_, " at $c[1] line $c[2].\n";
+}
 
 sub _msg { sprintf "@_", pos() || 0 }
 
