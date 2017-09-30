@@ -17,20 +17,18 @@ sub croak {
 	die @_, " at $c[1] line $c[2].\n";
 }
 
-sub _msg { sprintf "@_", pos() || 0 }
-
 sub _bdecode_string {
 
 	if ( m/ \G ( 0 | [1-9] \d* ) : /xgc ) {
 		my $len = $1;
 
-		croak _msg 'unexpected end of string data starting at %s'
+		croak 'unexpected end of string data starting at ', 0+pos
 			if $len > length() - pos();
 
 		my $str = substr $_, pos(), $len;
 		pos() = pos() + $len;
 
-		warn _msg STRING => "(length $len)", $len < 200 ? "[$str]" : () if $DEBUG;
+		warn "STRING (length $len)", $len < 200 ? " [$str]" : () if $DEBUG;
 
 		return $str;
 	}
@@ -38,7 +36,7 @@ sub _bdecode_string {
 		my $pos = pos();
 		if ( m/ \G -? 0? \d+ : /xgc ) {
 			pos() = $pos;
-			croak _msg 'malformed string length at %s';
+			croak 'malformed string length at ', 0+pos;
 		}
 	}
 
@@ -46,7 +44,7 @@ sub _bdecode_string {
 }
 
 sub _bdecode_chunk {
-	warn _msg 'decoding at %s' if $DEBUG;
+	warn 'decoding at ', 0+pos if $DEBUG;
 
 	local $max_depth = $max_depth - 1 if defined $max_depth;
 
@@ -54,51 +52,51 @@ sub _bdecode_chunk {
 		return $str;
 	}
 	elsif ( m/ \G i /xgc ) {
-		croak _msg 'unexpected end of data at %s' if m/ \G \z /xgc;
+		croak 'unexpected end of data at ', 0+pos if m/ \G \z /xgc;
 
 		m/ \G ( 0 | -? [1-9] \d* ) e /xgc
-			or croak _msg 'malformed integer data at %s';
+			or croak 'malformed integer data at ', 0+pos;
 
-		warn _msg INTEGER => $1 if $DEBUG;
+		warn "INTEGER $1" if $DEBUG;
 		return $1;
 	}
 	elsif ( m/ \G l /xgc ) {
-		warn _msg 'LIST' if $DEBUG;
+		warn 'LIST' if $DEBUG;
 
-		croak _msg 'nesting depth exceeded at %s'
+		croak 'nesting depth exceeded at ', 0+pos
 			if defined $max_depth and $max_depth < 0;
 
 		my @list;
 		until ( m/ \G e /xgc ) {
-			warn _msg 'list not terminated at %s, looking for another element' if $DEBUG;
+			warn 'list not terminated at ',0+pos,', looking for another element' if $DEBUG;
 			push @list, _bdecode_chunk();
 		}
 		return \@list;
 	}
 	elsif ( m/ \G d /xgc ) {
-		warn _msg 'DICT' if $DEBUG;
+		warn 'DICT' if $DEBUG;
 
-		croak _msg 'nesting depth exceeded at %s'
+		croak 'nesting depth exceeded at ', 0+pos
 			if defined $max_depth and $max_depth < 0;
 
 		my $last_key;
 		my %hash;
 		until ( m/ \G e /xgc ) {
-			warn _msg 'dict not terminated at %s, looking for another pair' if $DEBUG;
+			warn 'dict not terminated at ',0+pos,', looking for another pair' if $DEBUG;
 
-			croak _msg 'unexpected end of data at %s'
+			croak 'unexpected end of data at ', 0+pos
 				if m/ \G \z /xgc;
 
 			my $key = _bdecode_string();
-			defined $key or croak _msg 'dict key is not a string at %s';
+			defined $key or croak 'dict key is not a string at ', 0+pos;
 
-			croak _msg 'duplicate dict key at %s'
+			croak 'duplicate dict key at ', 0+pos
 				if exists $hash{ $key };
 
-			croak _msg 'dict key not in sort order at %s'
+			croak 'dict key not in sort order at ', 0+pos
 				if not( $do_lenient_decode ) and defined $last_key and $key lt $last_key;
 
-			croak _msg 'dict key is missing value at %s'
+			croak 'dict key is missing value at ', 0+pos
 				if m/ \G e /xgc;
 
 			$last_key = $key;
@@ -107,7 +105,7 @@ sub _bdecode_chunk {
 		return \%hash;
 	}
 	else {
-		croak _msg m/ \G \z /xgc ? 'unexpected end of data at %s' : 'garbage at %s';
+		croak m/ \G \z /xgc ? 'unexpected end of data' : 'garbage', ' at ', 0+pos;
 	}
 }
 
@@ -116,7 +114,7 @@ sub bdecode {
 	local $do_lenient_decode = shift;
 	local $max_depth = shift;
 	my $deserialised_data = _bdecode_chunk();
-	croak _msg 'trailing garbage at %s' if $_ !~ m/ \G \z /xgc;
+	croak 'trailing garbage at ', 0+pos if $_ !~ m/ \G \z /xgc;
 	return $deserialised_data;
 }
 
