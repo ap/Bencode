@@ -1,7 +1,7 @@
 use 5.006; use strict; use warnings;
 
-my $sc = q<github.com/ap/Bencode>;
-my $bt = q<http://github.com/ap/Bencode/issues>;
+my $sc = q<https://github.com/ap/Bencode>;
+my $bt = q<https://rt.cpan.org/Public/Dist/Display.html?Name=Bencode>;
 
 my %META = (
 	name        => 'Bencode',
@@ -9,7 +9,8 @@ my %META = (
 	x_copyright => { holder => 'Aristotle Pagaltzis', year => 2017 },
 	license     => 'perl_5',
 	resources   => {
-		repository => { type => 'git', url => "git://$sc", web => "http://$sc" },
+		license    => [ 'http://dev.perl.org/licenses/' ],
+		repository => { type => 'git', url => "$sc.git", web => $sc },
 		bugtracker => { web => $bt },
 	},
 	dynamic_config => 0,
