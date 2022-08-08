@@ -37,15 +37,9 @@ my ( $main_module ) = map { s!-!/!g; s!^!lib/! if -d 'lib'; -f "$_.pod" ? "$_.po
 die unless -e 'Makefile.PL';
 $file{'README'} = Pod::Readme::Brief->new( $file{ $main_module } )->render( installer => 'eumm' );
 
-delete @$meta{qw( no_index x_copyright x_serialization_backend )};
-delete $meta->{'prereqs'}{'build'};
-$file{'META.json'} = $meta->as_string({ version => 2 });
-$file{'META.yml'}  = $meta->as_string({ version => '1.4' });
-$file{'META.yml'} =~ s/: '([0-9]+(?:\.[0-9]+)?)'$/: $1/mg;
-
 my @manifest = split /\n/, slurp 'MANIFEST';
 my %manifest = map /\A([^\s#]+)()/, @manifest;
-$file{'MANIFEST'} = join "\n", ( sort keys %manifest, grep !exists $manifest{ $_ }, keys %file ), '';
+$file{'MANIFEST'} = join "\n", @manifest, ( sort grep !exists $manifest{ $_ }, keys %file ), '';
 
 mkparentdirs sort keys %file;
 for my $fn ( sort keys %file ) {
