@@ -3,8 +3,7 @@ use strict;
 use warnings;
 
 package Bencode;
-
-# ABSTRACT: BitTorrent serialisation format
+our $VERSION = '1.501';
 
 use Exporter::Tidy all => [qw( bencode bdecode )];
 
@@ -147,6 +146,12 @@ bdecode( 'i1e' );
 __END__
 
 =pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Bencode - BitTorrent serialisation format
 
 =head1 SYNOPSIS
 
@@ -297,3 +302,5 @@ The format does not support this.
 Strings and numbers are practically indistinguishable in Perl, so C<bencode()>
 has to resort to a heuristic to decide how to serialise a scalar. This cannot
 be fixed.
+
+=cut
