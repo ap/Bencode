@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 package Bencode;
-our $VERSION = '1.501';
+our $VERSION = '1.502';
 
 use Exporter::Tidy all => [qw( bencode bdecode )];
 
